@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat App</title>
+  <style>
+    #chat {
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+      color:black;
+      margin:20px;
+    }
+    #messages {
+      flex: 1;
+      overflow-y: scroll;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding:20px;
+      text-align: center;
+    }
+    #messageInput {
+      flex: 0;
+      height: 90px;
+      width:300px;
+      padding:5px;
+      margin-bottom:10px;
+      
+    }
+    button {
+        height:40px;
+        width:80px;
+        color:white;
+        background-color: blue;
+        margin-top:10px;
+        
+    
+    }
+  </style>
+</head>
+<body>
+  <div id="chat">
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Please type here"/>
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    const ws = new WebSocket('ws://localhost:3000');
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const messageElement = document.createElement('div');
+      messageElement.textContent = `${data.timestamp} - ${data.username}: ${data.message}`;
+      document.getElementById('messages').appendChild(messageElement);
+    };
+
+    const sendMessage = () => {
+      const message = document.getElementById('messageInput').value;
+      ws.send(JSON.stringify({ type: 'message', username: 'User', message: message }));
+      document.getElementById('messageInput').value = '';
+    };
+  </script>
+</body>
+</html>
